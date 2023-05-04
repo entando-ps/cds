@@ -32,6 +32,14 @@ spec:
       labels:
         app: cds
     spec:
+      initContainers:
+        - name: init-cds-data
+          image: busybox:1.36.0
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'wget --no-check-certificate https://raw.github.com/entando-ps/cds/pr-it-317/entando-data/entando720.tar.gz; tar -xf entando720.tar.gz; rm entando720.tar.gz ']
+          volumeMounts:
+            - mountPath: /entando-data
+              name: cds-data-volume
       containers:
         - readinessProbe:
             httpGet:
