@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   name: cds-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod-cluster
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -15,7 +14,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: cds.domain.org
+    - host: cds.domain.com
       http:
         paths:
           - backend:
@@ -34,5 +33,5 @@ spec:
             path: /api/v1/
   tls:
     - hosts:
-        - cds.domain.org
+        - cds.domain.com
       secretName: sample-tls-secret
