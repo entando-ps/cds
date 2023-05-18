@@ -34,9 +34,15 @@ spec:
     spec:
       initContainers:
         - name: init-cds-data
-          image: busybox:1.36.0
+          env:
+            - name: FORCE_CDS
+              value: "false"
+            - name: REPO_PATH
+              value: https://raw.github.com/entando-ps/cds/entando720/entando-data/
+            - name: ARCHIVE_NAME
+              value: entando720.tar.gz
+          image: registry.hub.docker.com/entando/busybox-cds:1.36.0
           imagePullPolicy: IfNotPresent
-          command: ['sh', '-c', 'wget --no-check-certificate https://raw.github.com/entando-ps/cds/entando720/entando-data/entando720.tar.gz; tar -xf entando720.tar.gz; rm entando720.tar.gz ']
           volumeMounts:
             - mountPath: /entando-data
               name: cds-data-volume
