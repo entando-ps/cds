@@ -36,7 +36,7 @@ spec:
         - name: init-cds-data
           env:
             - name: FORCE_CDS
-              value: false
+              value: "false"
             - name: REPO_PATH
               value: https://raw.github.com/entando-ps/cds/entando720/entando-data/
             - name: ARCHIVE_NAME
