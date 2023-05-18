@@ -42,3 +42,12 @@ To be able to start the CDS server we must define these env vars:
 - **RUST_LOG**="actix_web=trace,actix_server=trace,actix_web_middleware_keycloak_auth=trace"
 - **CORS_ALLOWED_ORIGIN**=https://host.domain.com (or All)
 - **CORS_ALLOWED_ORIGIN_END_WITH**=your-domain.com 
+
+### Environment variables for the init container
+
+| Name      | Default Value                                                  | Description                                                 |
+|-----------|----------------------------------------------------------------|-------------------------------------------------------------|
+| REPO_PATH | https://raw.github.com/entando-ps/cds/entando720/entando-data/ | The path of the GitHub repository used to store the archive |
+| ARCHIVE_NAME | entando720.tar.gz | The name of the archive containing all the Entando static resources |
+| FORCE_CDS | false | Needed to force the overwriting of the volume | 
+
