@@ -21,7 +21,7 @@
 use actix_files as afs;
 use std::{fmt, fs};
 
-use actix_web::{get, Error, HttpResponse};
+use actix_web::{get, HttpResponse, Error};
 use serde::Serialize;
 
 use actix_web::error::ErrorNotFound;
@@ -29,8 +29,9 @@ use flate2::read::GzDecoder;
 use flate2::{write::GzEncoder, Compression};
 use serde_json::json;
 use std::fs::File;
-use std::path::PathBuf;
+use std::path::{PathBuf};
 use tar::Archive;
+use sysinfo::{System, Disks};
 
 const ARCHIVE_BASE_PATH: &str = "entando-data/archives";
 const BASE_PATH: &str = "entando-data";
@@ -39,6 +40,12 @@ const BASE_PATH: &str = "entando-data";
 pub struct EntandoData {
     status: String,
     path: String,
+}
+
+#[derive(Serialize)]
+struct DiskInfo {
+    total_size: u64,
+    used_space: u64,
 }
 
 impl fmt::Display for EntandoData {
@@ -132,6 +139,27 @@ pub async fn decompress(req: actix_web::HttpRequest) -> Result<HttpResponse, Err
     }
 }
 
+#[get("/api/v1/utils/diskinfo")]
+pub async fn disk_info() -> Result<HttpResponse, Error> {
+    let mut system = System::new_all();
+    system.refresh_all();
+
+    if let Some(disk) = Disks::new_with_refreshed_list().iter().next() {
+        let disk_info = DiskInfo {
+            total_size: disk.total_space(),
+            used_space: disk.total_space() - disk.available_space(),
+        };
+
+        // Serialize the DiskInfo struct to JSON format
+        //let json_result = serde_json::to_string(&disk_info)
+        //    .map_err(|err| HttpResponse::InternalServerError().body(err.to_string()))?;
+
+        Ok::<HttpResponse, Error>(HttpResponse::Ok().json(disk_info))
+    } else {
+        Ok::<HttpResponse, Error>(HttpResponse::NotFound().body("No disk found"))
+    }
+}
+
 #[get("/api/v1/utils/compress/{filename:.*}")]
 pub async fn compress(req: actix_web::HttpRequest) -> Result<HttpResponse, Error> {
     fs::create_dir_all(ARCHIVE_BASE_PATH).expect("unable to create directory");
@@ -177,3 +205,5 @@ pub async fn compress(req: actix_web::HttpRequest) -> Result<HttpResponse, Error
         })))
     }
 }
+
+

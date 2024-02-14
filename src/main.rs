@@ -48,6 +48,7 @@ async fn main() -> std::io::Result<()> {
     println!("Public server listening on port: {}", PUBLIC_PORT);
 
     let internal_server = HttpServer::new(move || {
+
         let keycloak_auth = KeycloakAuth::default_with_pk(
             DecodingKey::from_rsa_pem(env::var("KEYCLOAK_PUBLIC_KEY").as_ref().unwrap().as_bytes())
                 .unwrap(),
@@ -61,6 +62,7 @@ async fn main() -> std::io::Result<()> {
             .service(handlers::delete)
             .service(utils::compress)
             .service(utils::decompress)
+            .service(utils::disk_info)
             .service(handlers::index_protected)
     })
     .bind(format!("0.0.0.0:{}", INTERNAL_PORT))?
