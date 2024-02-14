@@ -139,21 +139,28 @@ pub async fn decompress(req: actix_web::HttpRequest) -> Result<HttpResponse, Err
     }
 }
 
+
 #[get("/api/v1/utils/diskinfo")]
 pub async fn disk_info() -> Result<HttpResponse, Error> {
     let mut system = System::new_all();
     system.refresh_all();
-
-    if let Some(disk) = Disks::new_with_refreshed_list().iter().next() {
-        let disk_info = DiskInfo {
-            total_size: disk.total_space(),
-            used_space: disk.total_space() - disk.available_space(),
+    let mut found_mount = false;
+    let mut disk_info = DiskInfo {
+        total_size: 0,
+        used_space: 0,
+    };
+    for disk in &mut Disks::new_with_refreshed_list() {
+        if disk.mount_point().to_string_lossy() == "/entando-data" {
+            disk_info = DiskInfo {
+                total_size: disk.total_space(),
+                used_space: disk.total_space() - disk.available_space(),
+            };
+            found_mount = true;
+            break;
         };
+    };
 
-        // Serialize the DiskInfo struct to JSON format
-        //let json_result = serde_json::to_string(&disk_info)
-        //    .map_err(|err| HttpResponse::InternalServerError().body(err.to_string()))?;
-
+    if found_mount {
         Ok::<HttpResponse, Error>(HttpResponse::Ok().json(disk_info))
     } else {
         Ok::<HttpResponse, Error>(HttpResponse::NotFound().body("No disk found"))
