@@ -1,12 +1,12 @@
-FROM rust:1.64 as build-env
+FROM rust:1.75 as build-env
 WORKDIR /app
 ADD . /app
-RUN cargo build --release && \
-mkdir -p /entando-data/public && mkdir -p /entando-data/protected
+RUN apt-get -y update && apt-get install libudev-dev -y && \
+    cargo build --release
 
-FROM gcr.io/distroless/cc
-COPY --from=build-env /app/target/release/cds /
+FROM ubuntu:21.10
+COPY --from=build-env /app/target/release/cds /usr/local/bin/cds
 
 EXPOSE 8080 8081
 
-CMD ["./cds"]
+CMD ["cds"]
