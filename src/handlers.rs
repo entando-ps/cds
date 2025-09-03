@@ -37,6 +37,8 @@ use std::io::Write;
 use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 
+use crate::utils::{take_validated_and_sanitized_full_path, validate_and_sanitize_path, validate_filename};
+
 
 const PUBLIC_UPLOAD_PATH: &str = "./entando-data/public/";
 const PROTECTED_UPLOAD_PATH: &str = "./entando-data/protected/";
@@ -173,9 +175,9 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
     let mut filename = "".to_string();
     let mut path_value = "".to_string();
     let mut protected_value = "".to_string();
-    let mut final_path = "".to_string();
     let mut results = vec![];
     let mut is_directory: bool = false;
+    let mut safe_folder_path = PathBuf::new();
     // let mut status = "".to_string();
     while let Ok(Some(mut param)) = data.try_next().await {
         let content_type = param.content_disposition().clone();
@@ -191,22 +193,27 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
             while let Some(chunk) = param.try_next().await? {
                 protected_value = std::str::from_utf8(&chunk).unwrap().to_string();
             }
-
-            if &path_value != "archives" {
+            if &path_value == "archives" {
+                safe_folder_path = take_validated_and_sanitized_full_path(&path_value, BASE_PATH)?;
+            } else {
                 if protected_value == "true" {
-                    final_path = PROTECTED_UPLOAD_PATH.to_owned() + path_value.borrow();
-                } else if protected_value == "false" {
-                    final_path = PUBLIC_UPLOAD_PATH.to_owned() + path_value.borrow();
+                    safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PROTECTED_UPLOAD_PATH)?;
+                } else {
+                    safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PUBLIC_UPLOAD_PATH)?;
                 }
-            } else if &path_value == "archives" {
-                final_path = BASE_PATH.to_owned() + "archives";
             }
-            fs::create_dir_all(&final_path).expect("unable to create directory");
+            fs::create_dir_all(safe_folder_path.as_path()).expect("unable to create directory");
         }
 
         if param_field == "filename" {
             while let Some(chunk) = param.try_next().await? {
-                filename = std::str::from_utf8(&chunk).unwrap().to_string();
+                let raw_filename = std::str::from_utf8(&chunk).unwrap().to_string();
+                // Validate and sanitize the filename
+                filename = if raw_filename.is_empty() {
+                    String::new()
+                } else {
+                    validate_filename(&raw_filename)?
+                };
             }
             if filename.is_empty() {
                 is_directory = true;
@@ -216,15 +223,14 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
         }
 
         if param_field == "file" && !is_directory {
-            let file = &filename;
-            let file_path = format!("{}/{}", final_path, sanitize_filename::sanitize(&file));
-            let mut f = web::block(|| fs::File::create(file_path)).await??;
+            // filename is already validated and sanitized
+            let full_file_path = format!("{}/{}", safe_folder_path.to_string_lossy(), filename);
+            let mut f = web::block(|| fs::File::create(full_file_path)).await??;
             // param is a stream of bytes
             while let Some(chunk) = param.try_next().await? {
                 // let stream = chunk.unwrap();
                 f = web::block(move || f.write_all(&chunk).map(|_| f)).await??;
             }
-        }
         if !file.is_empty() {
             let mut result = vec![FileResource {
                 status: "Ok".to_string(),
@@ -234,7 +240,7 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
                     .as_secs(),
-                path: final_path.to_owned(),
+                path: safe_folder_path.to_string_lossy().to_string(),
                 is_protected_file: protected_value.to_owned(),
             }];
 
@@ -251,7 +257,7 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs(),
-        path: final_path.to_owned(),
+        path: safe_folder_path.to_string_lossy().to_string(),
         is_protected_file: protected_value.to_owned(),
     }];
 
@@ -279,13 +285,12 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
 pub async fn index(req: web::Path<(String, String)>) -> Result<afs::NamedFile, Error> {
     let (_tenant, filename) = req.into_inner();
     if filename.starts_with("public/") || filename.starts_with("archives/") {
-        let mut path = PathBuf::new();
-        path.push(BASE_PATH);
-        path.push(
-               filename
-                .parse::<PathBuf>()
-                .unwrap(),
-        );
+        // Validate and sanitize the path to prevent path traversal
+        let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
+        
+        let mut path = PathBuf::from(BASE_PATH);
+        path.push(&safe_path);
+
         if path.exists() && path.is_file() {
             let file = afs::NamedFile::open(path)?;
             Ok(file.use_etag(true).use_last_modified(true))
@@ -317,14 +322,14 @@ pub async fn index(req: web::Path<(String, String)>) -> Result<afs::NamedFile, E
 /// (Result<afs:NamedFile, Error>): the file resource requested
 #[get("/api/v1/{filename:.*}")]
 pub async fn index_protected(req: HttpRequest) -> Result<afs::NamedFile, Error> {
-    let mut path = PathBuf::new();
-    path.push(BASE_PATH);
-    path.push(
-        req.match_info()
-            .query("filename")
-            .parse::<PathBuf>()
-            .unwrap(),
-    );
+    let filename: String = req.match_info().query("filename").parse().unwrap();
+    
+    // Validate and sanitize the path to prevent path traversal
+    let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
+    
+    let mut path = PathBuf::from(BASE_PATH);
+    path.push(&safe_path);
+    
     if path.exists() && path.is_file() {
         let file = afs::NamedFile::open(path)?;
         Ok(file.use_etag(true).use_last_modified(true))
@@ -351,14 +356,13 @@ pub async fn index_protected(req: HttpRequest) -> Result<afs::NamedFile, Error> 
 /// (Result<HttpResponse, Error>): a json returning the status of the operation
 #[delete("/api/v1/delete/{filename:.*}")]
 pub async fn delete(req: HttpRequest) -> Result<HttpResponse, Error> {
-    let mut path = PathBuf::new();
-    path.push(BASE_PATH);
-    path.push(
-        req.match_info()
-            .query("filename")
-            .parse::<PathBuf>()
-            .unwrap(),
-    );
+    let filename: String = req.match_info().query("filename").parse().unwrap();
+    
+    // Validate and sanitize the path to prevent path traversal
+    let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
+    
+    let mut path = PathBuf::from(BASE_PATH);
+    path.push(&safe_path);
 
     let result = if path.exists() {
         if path.is_dir() {
@@ -424,18 +428,17 @@ pub async fn delete(req: HttpRequest) -> Result<HttpResponse, Error> {
 /// with some metadata
 #[get("/api/v1/list/{filename:.*}")]
 pub async fn list(req: HttpRequest) -> Result<HttpResponse, Error> {
-    let mut path = PathBuf::new();
-    path.push(BASE_PATH);
-    path.push(
-        req.match_info()
-            .query("filename")
-            .parse::<PathBuf>()
-            .unwrap(),
-    );
+    let filename: String = req.match_info().query("filename").parse().unwrap();
+    
+    // Validate and sanitize the path to prevent path traversal
+    let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
+    
+    let mut path = PathBuf::from(BASE_PATH);
+    path.push(&safe_path);
 
     if path.exists() {
         let mut protected: bool = true;
-        if path.starts_with("entando-data/public") {
+        if safe_path.starts_with("public") {
             protected = false
         }
 
@@ -450,7 +453,7 @@ pub async fn list(req: HttpRequest) -> Result<HttpResponse, Error> {
                 last_modified_time: path.metadata().unwrap().modified().unwrap(),
                 size: path.metadata().unwrap().size(),
                 directory: false,
-                path: req.match_info().query("filename").to_string(),
+                path: safe_path.to_string_lossy().to_string(),
                 protected_folder: false,
             }];
 
