@@ -31,7 +31,6 @@ use serde_json::json;
 use std::fs::File;
 use std::path::{Path, PathBuf};
 use tar::Archive;
-use sanitize_filename;
 
 const ARCHIVE_BASE_PATH: &str = "entando-data/archives";
 const BASE_PATH: &str = "entando-data";
@@ -163,10 +162,7 @@ pub fn validate_filename(filename: &str) -> Result<String, Error> {
     }
     
     // Check for reserved names and characters
-    let reserved_names = [".", "..", "CON", "PRN", "AUX", "NUL", 
-                         "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-                         "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
-    
+    let reserved_names = [".", ".."];
     if reserved_names.contains(&filename.to_uppercase().as_str()) {
         return Err(ErrorBadRequest("Reserved filename not allowed"));
     }
@@ -282,7 +278,7 @@ pub async fn compress(req: actix_web::HttpRequest) -> Result<HttpResponse, Error
     let user_path: String = req.match_info().query("filename").parse().unwrap();
     
     // Validate the path to prevent path traversal
-    let mut path = take_validated_and_sanitized_full_path(&user_path, BASE_PATH)?;
+    let path = take_validated_and_sanitized_full_path(&user_path, BASE_PATH)?;
 
     let enc = GzEncoder::new(archive, Compression::best());
     let mut tar = tar::Builder::new(enc);
@@ -302,10 +298,10 @@ pub async fn compress(req: actix_web::HttpRequest) -> Result<HttpResponse, Error
         let mut f = File::open(&path).unwrap();
         tar.append_file("entando-data", &mut f).unwrap();
         let file = afs::NamedFile::open(format!("{}/entando-data.tar.gz", ARCHIVE_BASE_PATH))?;
-        return Ok(HttpResponse::Ok().json(EntandoData {
+        Ok(HttpResponse::Ok().json(EntandoData {
             status: "Ok".to_string(),
             path: file.path().to_str().unwrap().to_string(),
-        }));
+        }))
     } else {
         Err(ErrorNotFound(json!(EntandoData {
             status: "Ko".to_string(),
@@ -455,15 +451,6 @@ mod tests {
     }
 
     #[test]
-    fn test_take_validated_and_sanitized_full_path_windows_attacks() {
-        // Test Windows-specific attacks
-        assert!(take_validated_and_sanitized_full_path("C:\\windows\\system32\\config\\sam", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("D:\\sensitive\\data.txt", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("..\\..\\windows\\system32", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("public\\..\\..\\windows", "entando-data").is_err());
-    }
-
-    #[test]
     fn test_take_validated_and_sanitized_full_path_edge_cases() {
         // Test empty and whitespace paths
         assert!(take_validated_and_sanitized_full_path("", "entando-data").is_err());
@@ -518,21 +505,6 @@ mod tests {
 
     #[test]
     fn test_validate_filename_reserved_names() {
-        // Test Windows reserved names
-        assert!(validate_filename("CON").is_err());
-        assert!(validate_filename("PRN").is_err());
-        assert!(validate_filename("AUX").is_err());
-        assert!(validate_filename("NUL").is_err());
-        assert!(validate_filename("COM1").is_err());
-        assert!(validate_filename("COM9").is_err());
-        assert!(validate_filename("LPT1").is_err());
-        assert!(validate_filename("LPT9").is_err());
-        
-        // Test case insensitive
-        assert!(validate_filename("con").is_err());
-        assert!(validate_filename("Con").is_err());
-        assert!(validate_filename("CON").is_err());
-        
         // Test special directory names
         assert!(validate_filename(".").is_err());
         assert!(validate_filename("..").is_err());

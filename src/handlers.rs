@@ -31,7 +31,6 @@ use serde::{Deserialize, Serialize};
 
 use actix_web::error::{ErrorForbidden, ErrorNotFound};
 use serde_json::json;
-use std::borrow::Borrow;
 use std::fmt::Formatter;
 use std::io::Write;
 use std::os::unix::fs::MetadataExt;
@@ -195,12 +194,10 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
             }
             if &path_value == "archives" {
                 safe_folder_path = take_validated_and_sanitized_full_path(&path_value, BASE_PATH)?;
+            } else if protected_value == "true" {
+                safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PROTECTED_UPLOAD_PATH)?;
             } else {
-                if protected_value == "true" {
-                    safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PROTECTED_UPLOAD_PATH)?;
-                } else {
-                    safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PUBLIC_UPLOAD_PATH)?;
-                }
+                safe_folder_path = take_validated_and_sanitized_full_path(&path_value, PUBLIC_UPLOAD_PATH)?;
             }
             fs::create_dir_all(safe_folder_path.as_path()).expect("unable to create directory");
         }
@@ -215,11 +212,7 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
                     validate_filename(&raw_filename)?
                 };
             }
-            if filename.is_empty() {
-                is_directory = true;
-            } else {
-                is_directory = false;
-            }
+            is_directory = filename.is_empty();
         }
 
         if param_field == "file" && !is_directory {
@@ -231,6 +224,7 @@ pub async fn upload(mut data: Multipart) -> Result<HttpResponse, Error> {
                 // let stream = chunk.unwrap();
                 f = web::block(move || f.write_all(&chunk).map(|_| f)).await??;
             }
+        }
         if !file.is_empty() {
             let mut result = vec![FileResource {
                 status: "Ok".to_string(),
@@ -286,11 +280,7 @@ pub async fn index(req: web::Path<(String, String)>) -> Result<afs::NamedFile, E
     let (_tenant, filename) = req.into_inner();
     if filename.starts_with("public/") || filename.starts_with("archives/") {
         // Validate and sanitize the path to prevent path traversal
-        let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
-        
-        let mut path = PathBuf::from(BASE_PATH);
-        path.push(&safe_path);
-
+        let path = take_validated_and_sanitized_full_path(&filename, BASE_PATH)?;
         if path.exists() && path.is_file() {
             let file = afs::NamedFile::open(path)?;
             Ok(file.use_etag(true).use_last_modified(true))
@@ -325,11 +315,7 @@ pub async fn index_protected(req: HttpRequest) -> Result<afs::NamedFile, Error> 
     let filename: String = req.match_info().query("filename").parse().unwrap();
     
     // Validate and sanitize the path to prevent path traversal
-    let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
-    
-    let mut path = PathBuf::from(BASE_PATH);
-    path.push(&safe_path);
-    
+    let path = take_validated_and_sanitized_full_path(&filename, BASE_PATH)?;
     if path.exists() && path.is_file() {
         let file = afs::NamedFile::open(path)?;
         Ok(file.use_etag(true).use_last_modified(true))
@@ -359,10 +345,7 @@ pub async fn delete(req: HttpRequest) -> Result<HttpResponse, Error> {
     let filename: String = req.match_info().query("filename").parse().unwrap();
     
     // Validate and sanitize the path to prevent path traversal
-    let safe_path = validate_and_sanitize_path(&filename, BASE_PATH)?;
-    
-    let mut path = PathBuf::from(BASE_PATH);
-    path.push(&safe_path);
+    let path = take_validated_and_sanitized_full_path(&filename, BASE_PATH)?;
 
     let result = if path.exists() {
         if path.is_dir() {

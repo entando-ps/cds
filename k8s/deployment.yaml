@@ -56,7 +56,7 @@ spec:
             - name: CORS_ALLOWED_ORIGIN_END_WITH
               value: domain.com
           name: cds
-          image: docker.io/entando/cds:1.0.4
+          image: docker.io/entando/cds:1.0.4-fix.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:

@@ -77,7 +77,7 @@
 					"response": []
 				},
 				{
-					"name": "Delete Pulic Directories",
+					"name": "Delete Public Directories",
 					"event": [
 						{
 							"listen": "test",
