@@ -1,0 +1,2190 @@
+{
+	"info": {
+		"_postman_id": "6275f298-e0b1-4c5f-aebe-ce6cf0292c3f",
+		"name": "Keycloak and CDS API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5245832"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.collectionVariables.set('accessToken', pm.response.json().access_token);",
+									"    pm.collectionVariables.set('refreshToken', pm.response.json().refresh_token);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{admin-username}}"
+								},
+								{
+									"key": "password",
+									"value": "{{admin-password}}"
+								},
+								{
+									"key": "client_id",
+									"value": "{{keycloak-client-id}}"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{keycloak-client-secret}}"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak-url}}/realms/{{keycloak-realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak-url}}"
+							],
+							"path": [
+								"realms",
+								"{{keycloak-realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Directories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Directory and File Creation",
+			"item": [
+				{
+					"name": "Create Public Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public Subdirectory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/subfolder",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/subfolder",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "pippo.pdf",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f08a27b-bc60-45c0-82b0-f5ae77639294"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/subfolder",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "pippo.pdf",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f08a27b-bc60-45c0-82b0-f5ae77639294"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resource Retrieval",
+			"item": [
+				{
+					"name": "Get Existing Public Resource - As User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Existing Public Resource - As Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/temp/subfolder/pippo.txt",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"temp",
+								"subfolder",
+								"pippo.txt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - As Admin - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/subfolder/pippo.txt",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"subfolder",
+								"pippo.txt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Existing Protected Resource - As Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource - As Admin - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/subfolder/pippo.txt",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"subfolder",
+								"pippo.txt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - protected",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - archives",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/archives",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"archives"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - protected/temp/subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected/temp/subfolder",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected",
+								"temp",
+								"subfolder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public/temp/subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/temp/subfolder",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"temp",
+								"subfolder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public/../../entando-data/public/",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/../../entando-data/public/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"..",
+								"..",
+								"entando-data",
+								"public",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compress Resources",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/utils/compress/public/temp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"utils",
+								"compress",
+								"public",
+								"temp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Archive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/archives/entando-data.tar.gz",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"archives",
+								"entando-data.tar.gz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Decompress Archive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/utils/decompress/entando-data.tar.gz",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"utils",
+								"decompress",
+								"entando-data.tar.gz"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Path Traversal Attacks",
+			"item": [
+				{
+					"name": "Path Traversal Error - As User - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As User - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(403);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As User - 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../../../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../../../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - Path Traversal - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected/../../tmp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected",
+								"..",
+								"..",
+								"tmp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - Path Traversal - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/../../tmp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"..",
+								"..",
+								"tmp"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Directory and File Cleanup",
+			"item": [
+				{
+					"name": "Delete Public File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public File - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected File - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/temp/subfolder/pippo.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"temp",
+								"subfolder",
+								"pippo.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/temp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"temp"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Path Traversal CRUD",
+			"item": [
+				{
+					"name": "Create public file - Path Traversal Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/../../../tmp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "public.pdf",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f08a27b-bc60-45c0-82b0-f5ae77639294"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/temp/../../../tmp/public.pdf",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource By Admin - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/../../../tmp/public.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete public file - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp/../../../tmp/public.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource By Admin - Uploaded by Path Traversal - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/../../../tmp/public.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create protected file - Path Traversal Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/../../../tmp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "protected.pdf",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1f08a27b-bc60-45c0-82b0-f5ae77639294"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource By Admin - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/../../../tmp/protected.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete protected Resource - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/temp/../../../tmp/protected.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource By Admin - Uploaded by Path Traversal - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/../../../tmp/protected.pdf",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.pdf"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "keycloak-url",
+			"value": "http://localhost:8081/auth"
+		},
+		{
+			"key": "keycloak-realm",
+			"value": "entando-development"
+		},
+		{
+			"key": "admin-username",
+			"value": "admin"
+		},
+		{
+			"key": "admin-password",
+			"value": "admin"
+		},
+		{
+			"key": "keycloak-client-id",
+			"value": "entando-core"
+		},
+		{
+			"key": "keycloak-client-secret",
+			"value": "930837f0-95b2-4eeb-b303-82a56cac76e6"
+		},
+		{
+			"key": "cds-private-url",
+			"value": "http://localhost:18080"
+		},
+		{
+			"key": "cds-public-url",
+			"value": "http://cds.entando.realt/cds"
+		},
+		{
+			"key": "test-base-folder",
+			"value": "test",
+			"type": "string"
+		},
+		{
+			"key": "test-full-folder",
+			"value": "test/subfolder",
+			"type": "string"
+		},
+		{
+			"key": "test-filename",
+			"value": "pippo.pdf",
+			"type": "string"
+		},
+		{
+			"key": "test-filename-notfound",
+			"value": "pippo.txt",
+			"type": "string"
+		},
+		{
+			"key": "test-public-filename",
+			"value": "public.pdf",
+			"type": "string"
+		},
+		{
+			"key": "test-protected-filename",
+			"value": "protected.pdf",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
