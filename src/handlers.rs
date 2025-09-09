@@ -82,12 +82,12 @@ pub async fn health_check() -> Result<HttpResponse, Error> {
 /// * file (String): The local path of the file to be uploaded or the stream
 /// * date (u64): The UnixTime in seconds
 /// * path (String): The path where the file should be copied to the CDS server. If the `archives`
-/// value is passed, than a `tar.gz` archive is expected which should be copied inside a specific path
-/// `entando-data/archives/[your-archive].tar.gz`. The `filename` attribute must end with tar.gz if
-/// `archives` is passed as path.
+///   value is passed, than a `tar.gz` archive is expected which should be copied inside a specific path
+///   `entando-data/archives/[your-archive].tar.gz`. The `filename` attribute must end with tar.gz if
+///   `archives` is passed as path.
 /// * is_protected_file (String): Accepted values are (true, false). If the value is `true` than the
-/// file should be copied inside `/entando-data/protected` directory, otherwise to the
-/// `/entando-data/public` one.
+///   file should be copied inside `/entando-data/protected` directory, otherwise to the
+///   `/entando-data/public` one.
 #[derive(Serialize, Deserialize)]
 pub struct FileResource {
     status: String,

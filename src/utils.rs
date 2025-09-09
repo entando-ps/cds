@@ -129,7 +129,7 @@ fn normalize_path(path: &Path) -> PathBuf {
 }
 
 /// Check if a normalized path starts with a normalized base path
-fn path_starts_with_base(path: &PathBuf, base: &PathBuf) -> bool {
+fn path_starts_with_base(path: &Path, base: &Path) -> bool {
     let path_components: Vec<_> = path.components().collect();
     let base_components: Vec<_> = base.components().collect();
     
