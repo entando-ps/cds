@@ -1,6 +1,6 @@
 [package]
 name = "cds"
-version = "1.0.4-fix.1"
+version = "1.0.4-fix.2"
 authors = ["Pietrangelo Masala <p.masala@entando.com>"]
 edition = "2021"
 

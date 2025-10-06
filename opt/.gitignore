@@ -1,0 +1,4 @@
+volumes/cds/**
+volumes/cds/!placeholder
+volumes/keycloak/**
+volumes/keycloak/!placeholder

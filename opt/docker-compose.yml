@@ -1,0 +1,48 @@
+version: '3.3'
+services:
+    keycloak:
+        image: entando/entando-keycloak:7.3.0
+        hostname: keycloak
+        command: [
+            '-b',
+            '0.0.0.0',
+            '-Dkeycloak.profile.feature.scripts=enabled',
+            '-Dkeycloak.profile.feature.upload_scripts=enabled',
+            '-Dkeycloak.migration.action=import',
+            '-Dkeycloak.migration.provider=dir',
+            '-Dkeycloak.migration.dir=/opt/jboss/keycloak/realm-config',
+            '-Dkeycloak.migration.strategy=IGNORE_EXISTING', # use 'OVERWRITE_EXISTING' instead if you want to reset your current configuration
+            '-Djboss.socket.binding.port-offset=1000',
+            '-Dhttp-enabled=true'
+            ]
+        volumes:
+            - ./keycloak/realm-config:/opt/jboss/keycloak/realm-config
+            - ./volumes/keycloak:/opt/jboss/keycloak/standalone/data
+        environment:
+            - KEYCLOAK_USER=admin
+            - KEYCLOAK_PASSWORD=admin
+            - DB_VENDOR=h2
+            - SERVER_SERVLET_CONTEXT_PATH=/auth
+            - PROXY_ADDRESS_FORWARDING=true
+        user: "${UID}"
+        ports:
+            - "50090:9080"
+
+    cds:
+        build:  ../
+        hostname: cds
+        environment:
+            - CORS_ALLOWED_ORIGIN_END_WITH=.entando.realt
+            - CORS_ALLOWED_ORIGIN=All
+            - RUST_LOG=actix_web=debug,actix_server=debug,actix_web_middleware_keycloak_auth=debug
+            - RUST_BACKTRACE=1
+            - KEYCLOAK_PUBLIC_KEY= |
+                -----BEGIN PUBLIC KEY-----
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi+LF1taXiPGAciV3A1ltu0H4HOY43YI2IDo8pUI9XEYylFlIWovFS+YMi4cSmZDGRtgmMmH8V16vkPJu1UhzKAvO5V55UQq0l01th023OrdyBWkWbrgrEFZt+uI6LBJnCwYNrY0SSs4zT+aLdulBGMHq2R2qqNgMbw3vrbbRFdIwbwPKRalId8amgkIvJZ1g0kRwTq1A89g9d5htXvZ4CKUBA6DWji1+uOt7cPqRcwuKF/vYONrNvgHvbZ10HjmHacQVlvY1XMM6yTInkk5tmssgad8hzIh6zTlJofb6MDfLb0IydQxt3Hrfh8qzpJcurbLF9WJ11NATtg3wKwONCwIDAQAB
+                -----END PUBLIC KEY-----
+        volumes:
+            - ./volumes/cds:/entando-data
+        user: "${UID}"
+        ports:
+            - 50080:8080
+            - 50081:8081
