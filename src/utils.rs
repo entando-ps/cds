@@ -50,14 +50,9 @@ pub fn take_validated_and_sanitized_full_path(user_path: &str, base_path: &str) 
 /// Returns a secure PathBuf relative to the base path, or an error if the path is invalid.
 pub fn validate_and_sanitize_path(user_path: &str, base_path: &str) -> Result<PathBuf, Error> {
     // Remove any leading/trailing whitespace
-    let user_path = user_path.trim()
+    let user_path = remove_leading_slashes(remove_leading_backslashes(user_path.trim()))
         .replace("\\", "/");
 
-    // Reject empty paths
-    if user_path.is_empty() {
-        return Err(ErrorBadRequest("Path cannot be empty"));
-    }
-    
     // Reject absolute paths
     if user_path.starts_with('/') || user_path.starts_with('\\') {
         return Err(ErrorBadRequest("Absolute paths are not allowed"));
@@ -126,6 +121,15 @@ fn normalize_path(path: &Path) -> PathBuf {
         result.push(component);
     }
     result
+}
+
+fn remove_leading_slashes(s: &str) -> &str {
+    s.trim_start_matches('/')
+}
+
+fn remove_leading_backslashes(s: &str) -> &str {
+    // Note: the backslash must be escaped in the string literal
+    s.trim_start_matches('\\')
 }
 
 /// Check if a normalized path starts with a normalized base path
@@ -322,6 +326,7 @@ mod tests {
         assert!(validate_and_sanitize_path("archives/data.tar.gz", "entando-data").is_ok());
         assert!(validate_and_sanitize_path("public", "entando-data").is_ok());
         assert!(validate_and_sanitize_path("public/nested/deep/file.txt", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("/public/nested/deep/file.txt", "entando-data").is_ok());
     }
 
     #[test]
@@ -353,10 +358,12 @@ mod tests {
     #[test]
     fn test_validate_and_sanitize_path_absolute_paths() {
         // Test absolute paths (should be rejected)
-        assert!(validate_and_sanitize_path("/etc/passwd", "entando-data").is_err());
-        assert!(validate_and_sanitize_path("/root/.ssh/id_rsa", "entando-data").is_err());
-        assert!(validate_and_sanitize_path("\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_err());
-        assert!(validate_and_sanitize_path("/home/user/.bashrc", "entando-data").is_err());
+        assert!(validate_and_sanitize_path("/etc/passwd", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("////etc/passwd", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("/root/.ssh/id_rsa", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("\\\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("/home/user/.bashrc", "entando-data").is_ok());
     }
 
     #[test]
@@ -369,14 +376,23 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_and_sanitize_path_edge_cases() {
+    fn test_validate_and_sanitize_path_root_cases() {
         // Test empty and whitespace paths
-        assert!(validate_and_sanitize_path("", "entando-data").is_err());
-        assert!(validate_and_sanitize_path("   ", "entando-data").is_err());
-        assert!(validate_and_sanitize_path("\t\n", "entando-data").is_err());
-        
-        // Test current directory references
+        assert!(validate_and_sanitize_path("", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("   ", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("\t\n", "entando-data").is_ok());
+
+        // Test root folder
+        assert!(validate_and_sanitize_path("/", "entando-data").is_ok());
+        assert!(validate_and_sanitize_path("\\", "entando-data").is_ok());
+
+        // Test base folder
         assert!(validate_and_sanitize_path(".", "entando-data").is_ok());
+    }
+
+    #[test]
+    fn test_validate_and_sanitize_path_edge_cases() {
+        // Test current directory references
         assert!(validate_and_sanitize_path("./public/test.txt", "entando-data").is_ok());
         assert!(validate_and_sanitize_path("public/./test.txt", "entando-data").is_ok());
         
@@ -444,21 +460,32 @@ mod tests {
     #[test]
     fn test_take_validated_and_sanitized_full_path_absolute_paths() {
         // Test absolute paths (should be rejected)
-        assert!(take_validated_and_sanitized_full_path("/etc/passwd", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("/root/.ssh/id_rsa", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("/home/user/.bashrc", "entando-data").is_err());
+        assert!(take_validated_and_sanitized_full_path("/etc/passwd", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("////etc/passwd", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("/root/.ssh/id_rsa", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("\\\\windows\\system32\\drivers\\etc\\hosts", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("/home/user/.bashrc", "entando-data").is_ok());
+    }
+
+    #[test]
+    fn test_take_validated_and_sanitized_full_path_root_cases() {
+        // Test empty and whitespace paths
+        assert!(take_validated_and_sanitized_full_path("", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("   ", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("\t\n", "entando-data").is_ok());
+
+        // Test root folder
+        assert!(take_validated_and_sanitized_full_path("/", "entando-data").is_ok());
+        assert!(take_validated_and_sanitized_full_path("\\", "entando-data").is_ok());
+
+        // Test base folder
+        assert!(take_validated_and_sanitized_full_path(".", "entando-data").is_ok());
     }
 
     #[test]
     fn test_take_validated_and_sanitized_full_path_edge_cases() {
-        // Test empty and whitespace paths
-        assert!(take_validated_and_sanitized_full_path("", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("   ", "entando-data").is_err());
-        assert!(take_validated_and_sanitized_full_path("\t\n", "entando-data").is_err());
-
         // Test current directory references
-        assert!(take_validated_and_sanitized_full_path(".", "entando-data").is_ok());
         assert!(take_validated_and_sanitized_full_path("./public/test.txt", "entando-data").is_ok());
         assert!(take_validated_and_sanitized_full_path("public/./test.txt", "entando-data").is_ok());
 
@@ -577,11 +604,8 @@ mod tests {
         assert!(error_msg.contains("Path traversal attempt detected"));
         
         let result = validate_and_sanitize_path("/etc/passwd", "entando-data");
-        assert!(result.is_err());
-        let error = result.unwrap_err();
-        let error_msg = format!("{}", error);
-        assert!(error_msg.contains("Absolute paths are not allowed"));
-        
+        assert!(result.is_ok());
+
         let result = validate_filename("../test.txt");
         assert!(result.is_err());
         let error = result.unwrap_err();

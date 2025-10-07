@@ -1,0 +1,3582 @@
+{
+	"info": {
+		"_postman_id": "38b18b96-c3cf-470e-9a00-70c087aba069",
+		"name": "CDS API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5245832"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.collectionVariables.set('accessToken', pm.response.json().access_token);",
+									"    pm.collectionVariables.set('refreshToken', pm.response.json().refresh_token);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "{{keycloak-username}}"
+								},
+								{
+									"key": "password",
+									"value": "{{keycloak-password}}"
+								},
+								{
+									"key": "client_id",
+									"value": "{{keycloak-client-id}}"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{keycloak-client-secret}}"
+								},
+								{
+									"key": "grant_type",
+									"value": "password"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{keycloak-url}}/realms/{{keycloak-realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{keycloak-url}}"
+							],
+							"path": [
+								"realms",
+								"{{keycloak-realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Delete Public Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete entando-data Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/entando-data/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"entando-data",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Archive Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/archives/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"archives",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Directory and File Creation",
+			"item": [
+				{
+					"name": "Create Public Directory Relative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public Directory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path/",
+									"value": "/{{test-absolute-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public Subdirectory Relative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public Subdirectory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Root",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Root With Empty Filename",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Root With Filename Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Filename cannot contain path separators\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "../../etc/passwd",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Relative Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Relative Subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Absolute Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Public File in Absolute Subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Directory Relative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Subdirectory Relative",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Directory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected Subdirectory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Root",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Root With Empty Filename",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Root With Filename Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Filename cannot contain path separators\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "../../etc/passwd",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Relative Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Relative Subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "{{test-main-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Absolute Folder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-folder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Protected File in Absolute Subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json()[0].status).to.equal(\"Ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "/{{test-absolute-subfolder}}",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "{{test-filename}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resource Retrieval",
+			"item": [
+				{
+					"name": "Get Existing Public Resource - As User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/{{test-main-subfolder}}/{{test-filename}}",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Existing Public Resource - As Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/{{test-main-subfolder}}/{{test-filename}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/{{test-main-subfolder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - As Admin - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/{{test-main-subfolder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Existing Protected Resource - As Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/{{test-main-subfolder}}/{{test-filename}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"{{test-main-subfolder}}",
+								"{{test-filename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource - As Admin - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/{{test-main-subfolder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"{{test-main-subfolder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - protected",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - protected/temp/subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected/{{test-main-subfolder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected",
+								"{{test-main-subfolder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public/temp/subfolder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/{{test-main-subfolder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"{{test-main-subfolder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - public/../../entando-data/public/",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/../../entando-data/public/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"..",
+								"..",
+								"entando-data",
+								"public",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Compress Resources",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/utils/compress/public/{{test-main-folder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"utils",
+								"compress",
+								"public",
+								"{{test-main-folder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - archives",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/archives",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"archives"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Archive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/archives/entando-data.tar.gz",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"archives",
+								"entando-data.tar.gz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Decompress Archive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/utils/decompress/entando-data.tar.gz",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"utils",
+								"decompress",
+								"entando-data.tar.gz"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Path Traversal Attacks",
+			"item": [
+				{
+					"name": "Path Traversal Error - As User - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As User - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As User - 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/cms/../../../etc/passwd",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"cms",
+								"..",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"    pm.expect(pm.response.text()).to.equal(\"File not found. Or tried to list content of a directory.\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Path Traversal Error - As Admin - 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/cms/../../../etc/passwd",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"cms",
+								"..",
+								"..",
+								"..",
+								"etc",
+								"passwd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - Path Traversal - 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/protected/../../tmp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"protected",
+								"..",
+								"..",
+								"tmp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Resources - Path Traversal - 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/list/public/../../tmp",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"list",
+								"public",
+								"..",
+								"..",
+								"tmp"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Path Traversal CRUD",
+			"item": [
+				{
+					"name": "Create public file - Path Traversal Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/../../../tmp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "public.jpg",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{cds-public-url}}/public/temp/../../../tmp/public.jpg",
+							"host": [
+								"{{cds-public-url}}"
+							],
+							"path": [
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource By Admin - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/../../../tmp/public.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete public file - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/temp/../../../tmp/public.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Resource By Admin - Uploaded by Path Traversal - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/public/temp/../../../tmp/public.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"public.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create protected file - Path Traversal Upload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "path",
+									"value": "temp/../../../tmp",
+									"type": "text"
+								},
+								{
+									"key": "protected",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "filename",
+									"value": "protected.jpg",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "text",
+									"src": "{{file-to-upload}}"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/upload/",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"upload",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource By Admin - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/../../../tmp/protected.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete protected Resource - Uploaded by Path Traversal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/temp/../../../tmp/protected.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Protected Resource By Admin - Uploaded by Path Traversal - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(400);",
+									"    pm.expect(pm.response.text()).to.equal(\"Path traversal attempt detected\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/protected/temp/../../../tmp/protected.jpg",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"protected",
+								"temp",
+								"..",
+								"..",
+								"..",
+								"tmp",
+								"protected.jpg"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Directory and File Cleanup",
+			"item": [
+				{
+					"name": "Delete Public File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-main-subfolder}}/{{test-filename}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public File - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-main-subfolder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-main-subfolder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-main-folder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-main-folder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Subdirectory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-absolute-subfolder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-absolute-subfolder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Directory Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-absolute-folder}}/notfound",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-absolute-folder}}",
+								"notfound"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Public Directory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/public/{{test-absolute-folder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"public",
+								"{{test-absolute-folder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-main-subfolder}}/{{test-filename}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-main-subfolder}}",
+								"{{test-filename}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected File - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-main-subfolder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-main-subfolder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-main-folder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-main-folder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Subdirectory",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-absolute-subfolder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-absolute-subfolder}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directory Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"KO\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-absolute-folder}}/{{test-filename-notfound}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-absolute-folder}}",
+								"{{test-filename-notfound}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Protected Directory Absolute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Request executed successfully', function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"    pm.expect(pm.response.json().status).to.equal(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{cds-private-url}}/api/v1/delete/protected/{{test-absolute-folder}}",
+							"host": [
+								"{{cds-private-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"delete",
+								"protected",
+								"{{test-absolute-folder}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cds-private-url",
+			"value": "http://localhost:50080"
+		},
+		{
+			"key": "cds-public-url",
+			"value": "http://localhost:50081/cds"
+		},
+		{
+			"key": "keycloak-url",
+			"value": "http://localhost:50090/auth"
+		},
+		{
+			"key": "keycloak-realm",
+			"value": "entando-dev"
+		},
+		{
+			"key": "keycloak-client-id",
+			"value": "external"
+		},
+		{
+			"key": "keycloak-client-secret",
+			"value": "external"
+		},
+		{
+			"key": "keycloak-username",
+			"value": "admin"
+		},
+		{
+			"key": "keycloak-password",
+			"value": "admin"
+		},
+		{
+			"key": "test-main-folder",
+			"value": "test",
+			"type": "string"
+		},
+		{
+			"key": "test-main-subfolder",
+			"value": "test/subfolder",
+			"type": "string"
+		},
+		{
+			"key": "test-filename",
+			"value": "logo.jpg",
+			"type": "string"
+		},
+		{
+			"key": "test-filename-notfound",
+			"value": "pippo.txt",
+			"type": "string"
+		},
+		{
+			"key": "test-absolute-folder",
+			"value": "absolute",
+			"type": "string"
+		},
+		{
+			"key": "test-absolute-subfolder",
+			"value": "absolute/subfolder",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "file-to-upload",
+			"value": "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9DQ0qK/Wh66+Ajo8oujAxZgZ6cijwQaoALtRMd0zuhAm65yD+BPuIf01+9+c7QXeiCi9T7QfWn2/s1+C1tgXIjjrIQW9o9xHoW6dSPpWuqns2nMVfat/IY6igqeBLmKiqZEVTifjyE6qKZSGH8mKUAH0DVPdlpt3NtoBSp9Aaj/wJqP11V2IN27Yu4kmtBWpABP8SAAfuABr4BgwKq2XKyaAuzRFu0WBsiCrVAS8BQbKATmgiJPTiUQLt6baq70xVkLtsY1YVNCfuR9T+p1SLa2DpII07ka7VO0VUelFNKgU+g6a+TRscYrshmDIxH5ub4hmqAlem2AOTsop7OTbBtufkOgnnBUh3qn7ep9v+X7f2a/DaWpDqYoysp942j3/AObp7v7a65CaKKIqCkkkkKxyqKimmQgqqFSSQKdQSgHM5UESEAR3ECEKH4ANUM7NTcSaCgr9BUnp/aSf4knV1I446lFCljU0AFSAFqfuaAD+AA9ANVdU6r0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001/9k=",
+			"type": "string"
+		}
+	]
+}
